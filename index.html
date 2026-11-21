@@ -1,0 +1,3057 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <meta name="theme-color" content="#0A192F">
+  <meta name="description" content="SuperTor: Уравнения — игра-тренажёр по линейным уравнениям для 7 класса. 21 уравнение, ввод ответа, объяснения.">
+  <title>SuperTor: Уравнения — математический поход</title>
+
+  <link rel="manifest" href="manifest.webmanifest">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="SuperTor">
+  <link rel="apple-touch-icon" href="icons/icon-180.png">
+  <link rel="icon" type="image/png" sizes="192x192" href="icons/icon-192.png">
+
+  <!-- Шрифты Google Fonts: заголовки в стиле esports-плаката + тело текста -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@600;700;800;900&family=Russo+One&display=swap" rel="stylesheet">
+
+  <style>
+
+    /* =========================================================
+       SuperTor: Степени — Brawl Stars / esports mascot UI
+       Палитра: #0A192F, #FFC107, #00BFFF, #000000
+       ========================================================= */
+    :root {
+      --navy: #0A192F;
+      --navy-deep: #040C18;
+      --navy-panel: #0D2340;
+      --navy-soft: #14345A;
+      --gold: #FFC107;
+      --gold-light: #FFE066;
+      --gold-deep: #D18B00;
+      --blue: #00BFFF;
+      --blue-deep: #0077B6;
+      --green: #37D86C;
+      --green-deep: #138A42;
+      --red: #FF5064;
+      --red-deep: #B70F26;
+      --white: #F6FBFF;
+      --muted: #A9C2D9;
+      --ink: #000000;
+      --font-display: "Russo One", "Arial Black", Impact, sans-serif;
+      --font-body: "Nunito", "Segoe UI", Tahoma, sans-serif;
+      --hard-shadow: 0 7px 0 #000;
+    }
+
+    *,
+    *::before,
+    *::after {
+      box-sizing: border-box;
+    }
+
+    html {
+      min-height: 100%;
+      background: var(--navy-deep);
+    }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      min-height: 100svh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: clamp(12px, 3vw, 34px);
+      overflow-x: hidden;
+      color: var(--white);
+      font-family: var(--font-body);
+      background: #040C18;
+      -webkit-font-smoothing: antialiased;
+      text-rendering: optimizeLegibility;
+    }
+
+    button {
+      font: inherit;
+      touch-action: manipulation;
+    }
+
+    button,
+    a {
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    button:focus-visible,
+    [tabindex]:focus-visible {
+      outline: 3px solid var(--gold);
+      outline-offset: 4px;
+    }
+
+    [hidden] {
+      display: none !important;
+    }
+
+    .visually-hidden {
+      position: absolute !important;
+      width: 1px !important;
+      height: 1px !important;
+      padding: 0 !important;
+      margin: -1px !important;
+      overflow: hidden !important;
+      clip: rect(0, 0, 0, 0) !important;
+      white-space: nowrap !important;
+      border: 0 !important;
+    }
+
+    /* ---------------------------------------------------------
+       ФОН
+       Чтобы поставить свою картинку, добавьте в .world:
+       background-image: url("viking-bg.png");
+       background-size: cover;
+       background-position: center;
+       --------------------------------------------------------- */
+    .world {
+      position: fixed;
+      inset: 0;
+      z-index: -2;
+      overflow: hidden;
+      background:
+        radial-gradient(ellipse at 18% 4%, rgba(0, 191, 255, 0.24), transparent 42%),
+        radial-gradient(ellipse at 84% 12%, rgba(102, 70, 255, 0.16), transparent 40%),
+        radial-gradient(ellipse at 52% 104%, rgba(255, 193, 7, 0.10), transparent 48%),
+        linear-gradient(180deg, #07172E 0%, #0A192F 48%, #030A14 100%);
+    }
+
+    .world::before {
+      content: "";
+      position: absolute;
+      inset: -20%;
+      opacity: 0.36;
+      background-image:
+        radial-gradient(circle, rgba(255, 255, 255, 0.9) 0 1px, transparent 1.6px),
+        radial-gradient(circle, rgba(0, 191, 255, 0.8) 0 1px, transparent 1.6px),
+        radial-gradient(circle, rgba(255, 193, 7, 0.7) 0 1px, transparent 1.8px);
+      background-size: 104px 104px, 173px 173px, 239px 239px;
+      background-position: 12px 8px, 48px 72px, 96px 32px;
+      animation: starDrift 90s linear infinite;
+    }
+
+    .world::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background:
+        radial-gradient(ellipse at 50% 45%, transparent 30%, rgba(2, 7, 14, 0.52) 100%),
+        linear-gradient(180deg, rgba(2, 7, 14, 0.06), rgba(2, 7, 14, 0.58));
+      pointer-events: none;
+    }
+
+    .aurora {
+      position: absolute;
+      width: 58vw;
+      height: 58vw;
+      border-radius: 50%;
+      filter: blur(90px);
+      opacity: 0.26;
+      mix-blend-mode: screen;
+      animation: auroraFloat 14s ease-in-out infinite alternate;
+    }
+
+    .aurora--one {
+      top: -34vw;
+      left: -16vw;
+      background: #00BFFF;
+    }
+
+    .aurora--two {
+      right: -28vw;
+      top: 6vh;
+      background: #6C4BFF;
+      animation-delay: -5s;
+    }
+
+    .aurora--three {
+      left: 24vw;
+      bottom: -48vw;
+      background: #FFC107;
+      opacity: 0.12;
+      animation-delay: -9s;
+    }
+
+    .mountains {
+      position: absolute;
+      left: 0;
+      bottom: 0;
+      width: 100%;
+      height: 34vh;
+      min-height: 210px;
+      opacity: 0.82;
+      pointer-events: none;
+    }
+
+    .mountains--back {
+      height: 42vh;
+      background: linear-gradient(180deg, #0A213B, #071629);
+      clip-path: polygon(0 100%, 0 68%, 8% 52%, 17% 70%, 28% 37%, 39% 62%, 52% 44%, 63% 70%, 73% 49%, 84% 64%, 93% 42%, 100% 58%, 100% 100%);
+      opacity: 0.48;
+    }
+
+    .mountains--front {
+      background: linear-gradient(180deg, #061322, #02070E);
+      clip-path: polygon(0 100%, 0 76%, 10% 62%, 20% 78%, 31% 56%, 43% 76%, 55% 62%, 67% 81%, 78% 58%, 91% 72%, 100% 62%, 100% 100%);
+    }
+
+    /* ---------------------------------------------------------
+       КАРКАС ИГРЫ
+       --------------------------------------------------------- */
+    .game-shell {
+      position: relative;
+      z-index: 1;
+      width: min(1060px, 100%);
+    }
+
+    .screen {
+      display: none;
+    }
+
+    .screen.is-active {
+      display: block;
+      animation: screenIn 0.4s cubic-bezier(0.2, 0.8, 0.2, 1) both;
+    }
+
+    .panel {
+      position: relative;
+      isolation: isolate;
+      overflow: hidden;
+      border: 4px solid var(--ink);
+      border-radius: 34px;
+      background:
+        radial-gradient(circle at 18% 0%, rgba(0, 191, 255, 0.10), transparent 34%),
+        linear-gradient(155deg, rgba(18, 47, 82, 0.98), rgba(5, 15, 31, 0.99));
+      box-shadow:
+        0 12px 0 #000,
+        0 28px 70px rgba(0, 0, 0, 0.64),
+        inset 0 2px 0 rgba(255, 255, 255, 0.12);
+    }
+
+    .panel::before {
+      content: "";
+      position: absolute;
+      inset: 9px;
+      z-index: 0;
+      border: 2px solid rgba(255, 193, 7, 0.13);
+      border-radius: 25px;
+      box-shadow: inset 0 0 38px rgba(0, 191, 255, 0.06);
+      pointer-events: none;
+    }
+
+    .panel::after {
+      content: "";
+      position: absolute;
+      top: -160px;
+      left: 12%;
+      z-index: 0;
+      width: 76%;
+      height: 230px;
+      border-radius: 50%;
+      background: radial-gradient(ellipse, rgba(0, 191, 255, 0.17), transparent 68%);
+      pointer-events: none;
+    }
+
+    .panel > * {
+      position: relative;
+      z-index: 1;
+    }
+
+    /* ---------------------------------------------------------
+       КНОПКИ
+       --------------------------------------------------------- */
+    .btn {
+      position: relative;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 12px;
+      min-height: 58px;
+      padding: 0 26px;
+      border: 3px solid var(--ink);
+      border-radius: 17px;
+      color: #07152A;
+      font-family: var(--font-display);
+      font-size: 1.05rem;
+      line-height: 1;
+      letter-spacing: 0.02em;
+      cursor: pointer;
+      user-select: none;
+      transition: transform 0.14s ease, box-shadow 0.14s ease, filter 0.14s ease;
+    }
+
+    .btn::after {
+      content: "";
+      position: absolute;
+      top: 4px;
+      left: 12px;
+      right: 12px;
+      height: 38%;
+      border-radius: 10px;
+      background: linear-gradient(180deg, rgba(255, 255, 255, 0.32), transparent);
+      pointer-events: none;
+    }
+
+    .btn--primary {
+      background: linear-gradient(180deg, #FFF09A 0%, #FFD34D 24%, #FFC107 56%, #E8A000 100%);
+      box-shadow:
+        0 7px 0 #000,
+        0 11px 0 rgba(0, 0, 0, 0.12),
+        inset 0 2px 0 rgba(255, 255, 255, 0.7),
+        inset 0 -4px 0 rgba(164, 103, 0, 0.34);
+    }
+
+    .btn--primary:hover {
+      transform: translateY(-3px);
+      filter: brightness(1.04);
+      box-shadow:
+        0 10px 0 #000,
+        0 15px 22px rgba(0, 0, 0, 0.26),
+        inset 0 2px 0 rgba(255, 255, 255, 0.78),
+        inset 0 -4px 0 rgba(164, 103, 0, 0.34);
+    }
+
+    .btn--primary:active {
+      transform: translateY(4px);
+      box-shadow:
+        0 3px 0 #000,
+        inset 0 2px 0 rgba(255, 255, 255, 0.62),
+        inset 0 -3px 0 rgba(164, 103, 0, 0.34);
+    }
+
+    .btn--blue {
+      color: #021324;
+      background: linear-gradient(180deg, #B7F4FF 0%, #55DEFF 28%, #00BFFF 62%, #008AC0 100%);
+      box-shadow:
+        0 7px 0 #000,
+        inset 0 2px 0 rgba(255, 255, 255, 0.64),
+        inset 0 -4px 0 rgba(0, 91, 128, 0.34);
+    }
+
+    .btn--blue:hover {
+      transform: translateY(-3px);
+      filter: brightness(1.05);
+      box-shadow: 0 10px 0 #000, 0 15px 22px rgba(0, 0, 0, 0.24), inset 0 2px 0 rgba(255, 255, 255, 0.72);
+    }
+
+    .btn--ghost {
+      color: var(--white);
+      background: linear-gradient(180deg, #1B3E67, #0A203A);
+      box-shadow: 0 6px 0 #000, inset 0 2px 0 rgba(255, 255, 255, 0.12);
+    }
+
+    .btn--ghost:hover {
+      transform: translateY(-2px);
+      color: var(--gold);
+      box-shadow: 0 8px 0 #000, inset 0 2px 0 rgba(255, 255, 255, 0.16);
+    }
+
+    .btn__icon {
+      position: relative;
+      z-index: 1;
+      display: grid;
+      place-items: center;
+      width: 32px;
+      height: 32px;
+      flex: 0 0 32px;
+      border: 2px solid #07152A;
+      border-radius: 50%;
+      color: var(--gold);
+      background: #07152A;
+      font-size: 0.74rem;
+      box-shadow: inset 0 0 0 2px rgba(255, 193, 7, 0.18);
+    }
+
+    .btn > span:not(.btn__icon) {
+      position: relative;
+      z-index: 1;
+    }
+
+    /* ---------------------------------------------------------
+       СТАРТОВЫЙ ЭКРАН
+       --------------------------------------------------------- */
+    .start-panel {
+      padding: clamp(24px, 4.4vw, 50px);
+    }
+
+    .start-grid {
+      display: grid;
+      grid-template-columns: minmax(265px, 0.85fr) minmax(0, 1.15fr);
+      align-items: center;
+      gap: clamp(24px, 4vw, 54px);
+    }
+
+    .mascot-stage {
+      position: relative;
+      display: grid;
+      place-items: center;
+      width: 100%;
+      max-width: 420px;
+      min-height: 380px;
+      margin: 0 auto;
+      padding: 16px;
+    }
+
+    .orbit {
+      position: absolute;
+      aspect-ratio: 1;
+      border: 2px dashed rgba(255, 193, 7, 0.32);
+      border-radius: 50%;
+      pointer-events: none;
+    }
+
+    .orbit--outer {
+      width: 98%;
+      max-width: 400px;
+      animation: spin 42s linear infinite;
+    }
+
+    .orbit--inner {
+      width: 86%;
+      max-width: 350px;
+      border-color: rgba(0, 191, 255, 0.26);
+      animation: spin 32s linear infinite reverse;
+    }
+
+    .mascot-stage::before {
+      content: "";
+      position: absolute;
+      z-index: 0;
+      width: 78%;
+      aspect-ratio: 1;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(0, 191, 255, 0.22) 0%, rgba(0, 191, 255, 0.07) 42%, transparent 70%);
+      filter: blur(7px);
+      pointer-events: none;
+    }
+
+    /* Вставьте сюда картинку викинга:
+       <img src="viking.png" alt="Викинг SuperTor"> */
+    .mascot-slot {
+      position: relative;
+      z-index: 2;
+      display: grid;
+      place-items: center;
+      width: min(100%, 368px);
+      aspect-ratio: 1;
+      overflow: visible;
+      border: 0;
+      border-radius: 0;
+      background: transparent;
+    }
+
+    .mascot-slot img,
+    .mascot-slot picture,
+    .mascot-slot > svg {
+      position: relative;
+      z-index: 1;
+      display: block;
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+      filter:
+        drop-shadow(0 0 18px rgba(0, 191, 255, 0.28))
+        drop-shadow(0 17px 24px rgba(0, 0, 0, 0.62));
+    }
+
+    .mascot-art {
+      animation: mascotFloat 4.8s ease-in-out infinite;
+    }
+
+    .mascot-bubble {
+      position: absolute;
+      top: -2px;
+      right: -8px;
+      z-index: 5;
+      max-width: 190px;
+      padding: 12px 16px;
+      border: 3px solid var(--ink);
+      border-radius: 15px;
+      color: #07152A;
+      background: var(--white);
+      box-shadow: 0 5px 0 #000;
+      font-size: 0.86rem;
+      font-weight: 900;
+      line-height: 1.15;
+      transform: rotate(3deg);
+      animation: bubbleFloat 5s ease-in-out infinite;
+    }
+
+    .mascot-bubble::after {
+      content: "";
+      position: absolute;
+      left: 28px;
+      bottom: -11px;
+      width: 16px;
+      height: 16px;
+      background: var(--white);
+      border-right: 3px solid var(--ink);
+      border-bottom: 3px solid var(--ink);
+      transform: rotate(45deg);
+    }
+
+    .float-symbol {
+      position: absolute;
+      z-index: 4;
+      display: grid;
+      place-items: center;
+      width: 48px;
+      height: 48px;
+      border: 3px solid var(--ink);
+      border-radius: 14px;
+      color: #07152A;
+      background: linear-gradient(180deg, var(--gold-light), var(--gold) 58%, #E6A000);
+      box-shadow: 0 5px 0 #000, inset 0 2px 0 rgba(255, 255, 255, 0.52);
+      font-family: var(--font-display);
+      font-size: 1.35rem;
+      animation: floatY 4.2s ease-in-out infinite;
+    }
+
+    .float-symbol--left {
+      --r: -10deg;
+      left: -21px;
+      top: 44%;
+      transform: rotate(var(--r));
+    }
+
+    .float-symbol--right {
+      --r: 8deg;
+      right: -21px;
+      top: 20%;
+      color: #021324;
+      background: linear-gradient(180deg, #AFF4FF, var(--blue) 60%, #008AC0);
+      animation-delay: -2s;
+      transform: rotate(var(--r));
+    }
+
+    .mascot-caption {
+      margin: 18px 0 0;
+      color: var(--muted);
+      font-size: 0.72rem;
+      font-weight: 900;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+    }
+
+    .start-copy {
+      min-width: 0;
+    }
+
+    .eyebrow {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 7px 13px;
+      border: 2px solid rgba(0, 191, 255, 0.42);
+      border-radius: 999px;
+      color: #BDEFFF;
+      background: rgba(0, 191, 255, 0.09);
+      font-size: 0.68rem;
+      font-weight: 900;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+    }
+
+    .eyebrow__bolt {
+      color: var(--gold);
+      font-size: 0.95rem;
+      line-height: 1;
+      text-shadow: 0 0 14px rgba(255, 193, 7, 0.8);
+    }
+
+    .game-title {
+      margin: 12px 0 0;
+      font-family: var(--font-display);
+      font-weight: 400;
+      line-height: 0.9;
+    }
+
+    .title-line {
+      display: block;
+    }
+
+    .title-line--main {
+      color: var(--gold);
+      font-size: clamp(3.1rem, 6.7vw, 6rem);
+      letter-spacing: -0.025em;
+      -webkit-text-stroke: 2px #000;
+      text-shadow:
+        0 4px 0 #000,
+        0 9px 0 rgba(0, 0, 0, 0.45),
+        0 16px 28px rgba(255, 193, 7, 0.18);
+    }
+
+    .title-colon {
+      position: relative;
+      display: inline-block;
+      width: 0.24em;
+      margin-left: 0.02em;
+      color: transparent;
+      -webkit-text-stroke: 0;
+      text-shadow: none;
+    }
+
+    .title-colon::before,
+    .title-colon::after {
+      content: "";
+      position: absolute;
+      left: 50%;
+      width: 0.125em;
+      aspect-ratio: 1;
+      border: 2px solid #000;
+      border-radius: 50%;
+      background: var(--blue);
+      box-shadow:
+        0 3px 0 #000,
+        0 0 16px rgba(0, 191, 255, 0.75);
+      transform: translateX(-50%);
+    }
+
+    .title-colon::before {
+      top: 0.16em;
+    }
+
+    .title-colon::after {
+      bottom: 0.16em;
+    }
+
+    .title-line--sub {
+      margin-top: 5px;
+      color: var(--white);
+      font-size: clamp(2rem, 4.7vw, 4.15rem);
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      -webkit-text-stroke: 2px #000;
+      text-shadow:
+        0 4px 0 #000,
+        0 8px 0 rgba(0, 0, 0, 0.35),
+        0 0 26px rgba(0, 191, 255, 0.18);
+    }
+
+    .tagline {
+      max-width: 500px;
+      margin: 20px 0 0;
+      color: #C5DDF0;
+      font-size: clamp(0.98rem, 1.45vw, 1.1rem);
+      font-weight: 700;
+      line-height: 1.55;
+    }
+
+    .rule-chips {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 10px;
+      max-width: 560px;
+      margin: 22px 0 25px;
+    }
+
+    .rule-chip {
+      padding: 10px 8px;
+      border: 2px solid rgba(255, 193, 7, 0.30);
+      border-radius: 13px;
+      background: rgba(0, 191, 255, 0.06);
+      box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.05);
+    }
+
+    .rule-chip__label {
+      display: block;
+      margin-bottom: 4px;
+      color: var(--blue);
+      font-size: 0.57rem;
+      font-weight: 900;
+      letter-spacing: 0.09em;
+      text-transform: uppercase;
+    }
+
+    .rule-chip__formula {
+      color: var(--white);
+      font-family: var(--font-display);
+      font-size: clamp(0.82rem, 1.5vw, 1rem);
+      white-space: nowrap;
+    }
+
+    .rule-chip sup {
+      font-size: 0.58em;
+      line-height: 0;
+    }
+
+    .btn--hero {
+      width: 100%;
+      max-width: 440px;
+      min-height: 76px;
+      padding: 0 32px;
+      border-radius: 20px;
+      font-size: clamp(1.1rem, 2vw, 1.34rem);
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+    }
+
+    .btn--hero::before {
+      content: "";
+      position: absolute;
+      inset: -3px;
+      border-radius: 22px;
+      box-shadow: 0 0 0 0 rgba(255, 193, 7, 0.34);
+      animation: heroPulse 2.7s ease-out infinite;
+      pointer-events: none;
+    }
+
+    .start-meta {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 8px 10px;
+      margin: 17px 0 0;
+      color: var(--muted);
+      font-size: 0.76rem;
+      font-weight: 800;
+      letter-spacing: 0.02em;
+    }
+
+    .start-meta span + span::before {
+      content: "•";
+      margin-right: 10px;
+      color: var(--gold);
+    }
+
+    .start-ribbon {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 14px;
+      margin-top: clamp(24px, 3vw, 34px);
+      padding-top: 18px;
+      border-top: 2px dashed rgba(255, 193, 7, 0.18);
+      color: var(--muted);
+      font-size: 0.7rem;
+      font-weight: 900;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+    }
+
+    .start-ribbon__runes {
+      color: rgba(255, 193, 7, 0.55);
+      font-family: var(--font-display);
+      letter-spacing: 0.35em;
+    }
+
+    /* ---------------------------------------------------------
+       ИГРОВОЙ ЭКРАН
+       --------------------------------------------------------- */
+    .game-panel {
+      padding: clamp(17px, 3vw, 32px);
+    }
+
+    .game-hud {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+    }
+
+    .hud-brand {
+      display: flex;
+      align-items: center;
+      gap: 11px;
+      min-width: 0;
+    }
+
+    .hud-brand__mark {
+      display: grid;
+      place-items: center;
+      width: 44px;
+      height: 44px;
+      flex: 0 0 44px;
+      border: 2px solid var(--ink);
+      border-radius: 12px;
+      color: #07152A;
+      background: linear-gradient(180deg, var(--gold-light), var(--gold) 58%, #E6A000);
+      box-shadow: 0 3px 0 #000, inset 0 2px 0 rgba(255, 255, 255, 0.55);
+      font-family: var(--font-display);
+      font-size: 0.92rem;
+      letter-spacing: -0.06em;
+      transform: rotate(-4deg);
+    }
+
+    .hud-brand__text {
+      display: flex;
+      flex-direction: column;
+      line-height: 1;
+      font-family: var(--font-display);
+      font-size: 1.02rem;
+      letter-spacing: 0.01em;
+    }
+
+    .hud-brand__text small {
+      margin-top: 4px;
+      color: var(--blue);
+      font-family: var(--font-body);
+      font-size: 0.55rem;
+      font-weight: 900;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+    }
+
+    .hud-stats {
+      display: flex;
+      align-items: center;
+      gap: 9px;
+    }
+
+    .hud-pill {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      min-height: 40px;
+      padding: 6px 11px;
+      border: 2px solid rgba(0, 191, 255, 0.28);
+      border-radius: 11px;
+      background: rgba(0, 191, 255, 0.07);
+      box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.06);
+    }
+
+    .hud-pill__label {
+      color: var(--muted);
+      font-size: 0.57rem;
+      font-weight: 900;
+      letter-spacing: 0.11em;
+      text-transform: uppercase;
+    }
+
+    .hud-pill strong {
+      color: var(--white);
+      font-family: var(--font-display);
+      font-size: 0.88rem;
+      white-space: nowrap;
+    }
+
+    .hud-pill--gold {
+      border-color: rgba(255, 193, 7, 0.36);
+      background: rgba(255, 193, 7, 0.09);
+    }
+
+    .hud-pill--gold strong {
+      color: var(--gold);
+      font-size: 1rem;
+    }
+
+    .hud-pill__icon {
+      color: var(--gold);
+      font-size: 0.95rem;
+      line-height: 1;
+      text-shadow: 0 0 12px rgba(255, 193, 7, 0.68);
+    }
+
+    .score-bump {
+      animation: scoreBump 0.4s cubic-bezier(0.2, 1.7, 0.4, 1);
+    }
+
+    .progress-block {
+      margin: 17px 0 21px;
+    }
+
+    .progress-caption {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 14px;
+      margin-bottom: 7px;
+      color: var(--muted);
+      font-size: 0.61rem;
+      font-weight: 900;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+    }
+
+    .progress-caption span:last-child {
+      color: var(--gold);
+      font-family: var(--font-display);
+      font-size: 0.72rem;
+      letter-spacing: 0.02em;
+    }
+
+    .progress-track {
+      position: relative;
+      height: 17px;
+      overflow: hidden;
+      border: 2px solid var(--ink);
+      border-radius: 999px;
+      background: #030D1B;
+      box-shadow:
+        inset 0 3px 6px rgba(0, 0, 0, 0.7),
+        0 2px 0 rgba(255, 255, 255, 0.04);
+    }
+
+    .progress-fill {
+      position: absolute;
+      inset: 1px auto 1px 1px;
+      width: 0;
+      overflow: hidden;
+      border-radius: 999px;
+      background: linear-gradient(90deg, #0077B6 0%, var(--blue) 42%, #5CEBFF 78%, var(--gold) 100%);
+      box-shadow: 0 0 15px rgba(0, 191, 255, 0.42);
+      transition: width 0.5s cubic-bezier(0.2, 0.9, 0.2, 1);
+    }
+
+    .progress-fill::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background: repeating-linear-gradient(120deg, transparent 0 11px, rgba(255, 255, 255, 0.18) 11px 21px);
+      animation: progressStripes 1.1s linear infinite;
+    }
+
+    .battle-card {
+      position: relative;
+      overflow: hidden;
+      padding: clamp(17px, 2.8vw, 29px);
+      border: 3px solid var(--ink);
+      border-radius: 25px;
+      background:
+        radial-gradient(circle at 50% -8%, rgba(0, 191, 255, 0.14), transparent 43%),
+        linear-gradient(180deg, rgba(10, 31, 58, 0.96), rgba(5, 17, 34, 0.98));
+      box-shadow:
+        0 7px 0 rgba(0, 0, 0, 0.72),
+        inset 0 1px 0 rgba(255, 255, 255, 0.08);
+      transition: border-color 0.2s ease, box-shadow 0.2s ease;
+    }
+
+    .battle-card::before {
+      content: "";
+      position: absolute;
+      top: -70px;
+      left: 50%;
+      width: 320px;
+      height: 155px;
+      border-radius: 50%;
+      background: rgba(0, 191, 255, 0.08);
+      filter: blur(34px);
+      transform: translateX(-50%);
+      pointer-events: none;
+    }
+
+    .battle-card.is-correct {
+      border-color: var(--green-deep);
+      animation: correctFlash 0.58s ease both;
+    }
+
+    .battle-card.is-wrong {
+      border-color: var(--red-deep);
+      animation: wrongShake 0.46s ease both;
+    }
+
+    .question-head {
+      position: relative;
+      z-index: 1;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+    }
+
+    .question-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      padding: 6px 11px;
+      border: 2px solid rgba(255, 193, 7, 0.38);
+      border-radius: 999px;
+      color: var(--gold);
+      background: rgba(255, 193, 7, 0.09);
+      font-size: 0.62rem;
+      font-weight: 900;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+    }
+
+    .question-badge__bolt {
+      font-size: 0.8rem;
+      line-height: 1;
+    }
+
+    .question-type {
+      color: var(--muted);
+      font-size: 0.61rem;
+      font-weight: 900;
+      letter-spacing: 0.12em;
+      text-align: right;
+      text-transform: uppercase;
+    }
+
+    .question-expression {
+      position: relative;
+      z-index: 1;
+      padding: clamp(21px, 3.6vw, 36px) 0 clamp(8px, 1.2vw, 12px);
+      color: var(--white);
+      font-family: var(--font-display);
+      font-size: clamp(2.15rem, 5.8vw, 4rem);
+      line-height: 1.1;
+      letter-spacing: 0.01em;
+      text-align: center;
+      text-shadow:
+        0 4px 0 #000,
+        0 7px 0 rgba(0, 0, 0, 0.35),
+        0 0 32px rgba(0, 191, 255, 0.16);
+      outline: none;
+      overflow-wrap: anywhere;
+    }
+
+    .question-expression sup {
+      position: relative;
+      top: -0.12em;
+      font-size: 0.57em;
+      line-height: 0;
+    }
+
+    .question-prompt {
+      position: relative;
+      z-index: 1;
+      margin: 0 0 18px;
+      color: var(--muted);
+      font-size: 0.83rem;
+      font-weight: 800;
+      letter-spacing: 0.01em;
+      text-align: center;
+    }
+
+    .answers {
+      position: relative;
+      z-index: 1;
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 13px;
+    }
+
+    .answer {
+      position: relative;
+      display: flex;
+      align-items: center;
+      gap: 13px;
+      min-height: 73px;
+      padding: 11px 17px;
+      overflow: hidden;
+      border: 3px solid var(--ink);
+      border-radius: 15px;
+      color: var(--white);
+      background:
+        linear-gradient(180deg, rgba(255, 255, 255, 0.055), transparent 40%),
+        linear-gradient(180deg, #173A63, #0A1E38);
+      box-shadow:
+        0 5px 0 #000,
+        inset 0 2px 0 rgba(255, 255, 255, 0.12);
+      cursor: pointer;
+      text-align: left;
+      transition: transform 0.13s ease, border-color 0.13s ease, box-shadow 0.13s ease, background 0.13s ease;
+    }
+
+    .answer::after {
+      content: "";
+      position: absolute;
+      top: 4px;
+      left: 10px;
+      right: 10px;
+      height: 36%;
+      border-radius: 9px;
+      background: linear-gradient(180deg, rgba(255, 255, 255, 0.08), transparent);
+      pointer-events: none;
+    }
+
+    .answer:hover:not(:disabled) {
+      z-index: 2;
+      border-color: var(--gold);
+      transform: translateY(-3px);
+      box-shadow:
+        0 8px 0 #000,
+        0 12px 21px rgba(0, 0, 0, 0.24),
+        inset 0 2px 0 rgba(255, 255, 255, 0.18);
+    }
+
+    .answer:active:not(:disabled) {
+      transform: translateY(2px);
+      box-shadow: 0 3px 0 #000, inset 0 2px 0 rgba(255, 255, 255, 0.12);
+    }
+
+    .answer:disabled {
+      cursor: default;
+    }
+
+    .answer__key {
+      position: relative;
+      z-index: 1;
+      display: grid;
+      place-items: center;
+      width: 36px;
+      height: 36px;
+      flex: 0 0 36px;
+      border: 2px solid var(--ink);
+      border-radius: 50%;
+      color: #07152A;
+      background: linear-gradient(180deg, var(--gold-light), var(--gold) 60%, #E2A000);
+      box-shadow: 0 3px 0 #000, inset 0 2px 0 rgba(255, 255, 255, 0.52);
+      font-family: var(--font-display);
+      font-size: 0.82rem;
+    }
+
+    .answer__value {
+      position: relative;
+      z-index: 1;
+      font-family: var(--font-display);
+      font-size: clamp(1.19rem, 2.6vw, 1.62rem);
+      line-height: 1.2;
+      text-shadow: 0 2px 0 rgba(0, 0, 0, 0.32);
+      overflow-wrap: anywhere;
+    }
+
+    .answer__value sup {
+      position: relative;
+      top: -0.1em;
+      font-size: 0.57em;
+      line-height: 0;
+    }
+
+    .answer.correct {
+      border-color: var(--ink);
+      background:
+        linear-gradient(180deg, rgba(255, 255, 255, 0.13), transparent 42%),
+        linear-gradient(180deg, #38DF76, #0E9E4D);
+      box-shadow:
+        0 5px 0 #000,
+        0 0 0 3px rgba(55, 216, 108, 0.22),
+        0 0 27px rgba(55, 216, 108, 0.42),
+        inset 0 2px 0 rgba(255, 255, 255, 0.25);
+      animation: answerPop 0.34s cubic-bezier(0.2, 1.5, 0.4, 1) both;
+    }
+
+    .answer.correct .answer__key {
+      color: var(--green-deep);
+      background: linear-gradient(180deg, #E8FFF0, #A8FFC5);
+    }
+
+    .answer.wrong {
+      border-color: var(--ink);
+      background:
+        linear-gradient(180deg, rgba(255, 255, 255, 0.10), transparent 42%),
+        linear-gradient(180deg, #FF6373, #C51D33);
+      box-shadow:
+        0 5px 0 #000,
+        0 0 0 3px rgba(255, 80, 100, 0.18),
+        0 0 24px rgba(255, 80, 100, 0.34),
+        inset 0 2px 0 rgba(255, 255, 255, 0.20);
+      animation: wrongShakeSmall 0.4s ease both;
+    }
+
+    .answer.wrong .answer__key {
+      color: var(--red-deep);
+      background: linear-gradient(180deg, #FFE5E8, #FFB2BA);
+    }
+
+    .answer.dimmed {
+      opacity: 0.48;
+      filter: saturate(0.5);
+    }
+
+    .feedback {
+      position: relative;
+      z-index: 1;
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
+      margin-top: 17px;
+      padding: 13px 15px;
+      border: 3px solid var(--ink);
+      border-radius: 15px;
+      box-shadow: 0 4px 0 #000, inset 0 1px 0 rgba(255, 255, 255, 0.1);
+      animation: feedbackIn 0.28s ease both;
+    }
+
+    .feedback.is-correct {
+      background: linear-gradient(180deg, rgba(20, 113, 60, 0.55), rgba(7, 38, 25, 0.85));
+      border-color: #0B6B39;
+    }
+
+    .feedback.is-wrong {
+      background: linear-gradient(180deg, rgba(136, 25, 43, 0.55), rgba(41, 10, 17, 0.85));
+      border-color: #8B1529;
+    }
+
+    .feedback__icon {
+      display: grid;
+      place-items: center;
+      width: 38px;
+      height: 38px;
+      flex: 0 0 38px;
+      border: 2px solid var(--ink);
+      border-radius: 50%;
+      color: #07152A;
+      box-shadow: 0 3px 0 #000, inset 0 2px 0 rgba(255, 255, 255, 0.4);
+      font-family: var(--font-display);
+      font-size: 1.02rem;
+    }
+
+    .feedback.is-correct .feedback__icon {
+      background: linear-gradient(180deg, #C7FFD9, var(--green));
+    }
+
+    .feedback.is-wrong .feedback__icon {
+      background: linear-gradient(180deg, #FFD5DA, var(--red));
+    }
+
+    .feedback__copy {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+      min-width: 0;
+      color: #D8EAF7;
+      font-size: 0.85rem;
+      font-weight: 700;
+      line-height: 1.42;
+    }
+
+    .feedback__copy strong {
+      color: var(--white);
+      font-family: var(--font-display);
+      font-size: 0.96rem;
+      font-weight: 400;
+      letter-spacing: 0.01em;
+    }
+
+    .feedback__answer {
+      color: var(--gold);
+      font-weight: 900;
+    }
+
+    .feedback__copy sup {
+      font-size: 0.64em;
+      line-height: 0;
+    }
+
+    .game-actions {
+      position: relative;
+      z-index: 1;
+      display: flex;
+      justify-content: flex-end;
+      margin-top: 16px;
+    }
+
+    .btn--next {
+      min-width: min(100%, 310px);
+      animation: popIn 0.28s cubic-bezier(0.2, 1.3, 0.4, 1) both;
+    }
+
+    /* ---------------------------------------------------------
+       ЭКРАН РЕЗУЛЬТАТОВ
+       --------------------------------------------------------- */
+    .end-panel {
+      padding: clamp(30px, 5vw, 58px) clamp(20px, 5vw, 54px);
+      text-align: center;
+    }
+
+    .end-panel::before {
+      border-color: rgba(255, 193, 7, 0.22);
+    }
+
+    .result-rays {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      z-index: 0;
+      width: 850px;
+      height: 850px;
+      background: repeating-conic-gradient(from 0deg, rgba(255, 193, 7, 0.085) 0deg 7deg, transparent 7deg 21deg);
+      -webkit-mask-image: radial-gradient(circle, transparent 0 21%, #000 42%, transparent 72%);
+      mask-image: radial-gradient(circle, transparent 0 21%, #000 42%, transparent 72%);
+      transform: translate(-50%, -50%);
+      animation: maskSpin 90s linear infinite;
+      pointer-events: none;
+    }
+
+    .end-crest {
+      position: relative;
+      z-index: 2;
+      display: grid;
+      place-items: center;
+      width: clamp(164px, 25vw, 196px);
+      aspect-ratio: 1;
+      margin: 0 auto 27px;
+      border: 4px solid var(--ink);
+      border-radius: 50%;
+      background:
+        radial-gradient(circle at 50% 24%, rgba(0, 191, 255, 0.25), transparent 48%),
+        radial-gradient(circle at 50% 45%, #1B4776, #071A33 72%);
+      box-shadow:
+        0 10px 0 #000,
+        0 0 54px rgba(255, 193, 7, 0.23),
+        inset 0 0 0 8px rgba(255, 193, 7, 0.15),
+        inset 0 0 40px rgba(0, 191, 255, 0.18);
+    }
+
+    .end-crest::before {
+      content: "";
+      position: absolute;
+      inset: -14px;
+      border: 2px dashed rgba(255, 193, 7, 0.45);
+      border-radius: 50%;
+      animation: spin 36s linear infinite;
+    }
+
+    .end-crest::after {
+      content: "";
+      position: absolute;
+      inset: 12px;
+      border: 2px solid rgba(255, 255, 255, 0.12);
+      border-radius: 50%;
+      pointer-events: none;
+    }
+
+    .end-crest__star {
+      position: absolute;
+      top: -38px;
+      z-index: 2;
+      color: var(--gold);
+      font-size: 2.25rem;
+      line-height: 1;
+      text-shadow:
+        0 3px 0 #000,
+        0 0 19px rgba(255, 193, 7, 0.8);
+    }
+
+    .final-score {
+      position: relative;
+      z-index: 1;
+      color: var(--gold);
+      font-family: var(--font-display);
+      font-size: clamp(2.8rem, 6vw, 4rem);
+      line-height: 1;
+      -webkit-text-stroke: 2px #000;
+      text-shadow: 0 4px 0 #000, 0 8px 0 rgba(0, 0, 0, 0.35);
+    }
+
+    .final-score__label {
+      display: block;
+      margin-top: 13px;
+      color: #C5DDF0;
+      font-size: 0.57rem;
+      font-weight: 900;
+      letter-spacing: 0.13em;
+      text-transform: uppercase;
+    }
+
+    .end-kicker {
+      position: relative;
+      z-index: 1;
+      margin: 0 0 4px;
+      color: var(--blue);
+      font-size: 0.66rem;
+      font-weight: 900;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+    }
+
+    .end-title {
+      position: relative;
+      z-index: 1;
+      margin: 0;
+      color: var(--white);
+      font-family: var(--font-display);
+      font-size: clamp(2.35rem, 5.6vw, 4.2rem);
+      font-weight: 400;
+      line-height: 1;
+      letter-spacing: 0.01em;
+      text-shadow:
+        0 4px 0 #000,
+        0 8px 0 rgba(0, 0, 0, 0.34),
+        0 0 30px rgba(0, 191, 255, 0.18);
+    }
+
+    .end-title.is-victory {
+      color: var(--gold);
+    }
+
+    .end-message {
+      position: relative;
+      z-index: 1;
+      margin: 15px 0 0;
+      color: #D8EAF7;
+      font-size: clamp(1rem, 1.7vw, 1.14rem);
+      font-weight: 800;
+    }
+
+    .end-message strong {
+      color: var(--gold);
+      font-weight: 900;
+    }
+
+    .end-note {
+      position: relative;
+      z-index: 1;
+      max-width: 500px;
+      margin: 9px auto 0;
+      color: var(--muted);
+      font-size: 0.88rem;
+      font-weight: 700;
+      line-height: 1.45;
+    }
+
+    .record-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      margin-top: 13px;
+      padding: 5px 11px;
+      border: 2px solid var(--ink);
+      border-radius: 999px;
+      color: #07152A;
+      background: linear-gradient(180deg, var(--gold-light), var(--gold));
+      box-shadow: 0 3px 0 #000;
+      font-size: 0.62rem;
+      font-weight: 900;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      animation: popIn 0.36s cubic-bezier(0.2, 1.4, 0.4, 1) both;
+    }
+
+    .end-stats {
+      position: relative;
+      z-index: 1;
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 11px;
+      width: 100%;
+      max-width: 450px;
+      margin: 25px auto 0;
+    }
+
+    .end-stat {
+      padding: 12px 10px;
+      border: 2px solid rgba(0, 191, 255, 0.25);
+      border-radius: 13px;
+      background: rgba(0, 191, 255, 0.065);
+      box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.06);
+    }
+
+    .end-stat span {
+      display: block;
+      margin-bottom: 3px;
+      color: var(--muted);
+      font-size: 0.58rem;
+      font-weight: 900;
+      letter-spacing: 0.11em;
+      text-transform: uppercase;
+    }
+
+    .end-stat strong {
+      color: var(--white);
+      font-family: var(--font-display);
+      font-size: 1.32rem;
+      font-weight: 400;
+    }
+
+    .end-actions {
+      position: relative;
+      z-index: 1;
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: center;
+      gap: 12px;
+      margin-top: 28px;
+    }
+
+    .end-actions .btn {
+      min-width: 205px;
+    }
+
+    /* ---------------------------------------------------------
+       АНИМАЦИИ
+       --------------------------------------------------------- */
+    @keyframes screenIn {
+      from { opacity: 0; transform: translateY(12px) scale(0.985); }
+      to { opacity: 1; transform: translateY(0) scale(1); }
+    }
+
+    @keyframes starDrift {
+      from { transform: translate3d(0, 0, 0); }
+      to { transform: translate3d(-80px, 55px, 0); }
+    }
+
+    @keyframes auroraFloat {
+      from { transform: translate3d(0, 0, 0) scale(1); }
+      to { transform: translate3d(4vw, 3vh, 0) scale(1.12); }
+    }
+
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+
+    @keyframes maskSpin {
+      to { transform: translate(-50%, -50%) rotate(360deg); }
+    }
+
+    @keyframes mascotFloat {
+      0%, 100% { transform: translateY(0) rotate(-1deg); }
+      50% { transform: translateY(-8px) rotate(1deg); }
+    }
+
+    @keyframes bubbleFloat {
+      0%, 100% { transform: translateY(0) rotate(3deg); }
+      50% { transform: translateY(-5px) rotate(1deg); }
+    }
+
+    @keyframes floatY {
+      0%, 100% { transform: translateY(0) rotate(var(--r, -10deg)); }
+      50% { transform: translateY(-9px) rotate(var(--r, -10deg)); }
+    }
+
+    @keyframes heroPulse {
+      0% { box-shadow: 0 0 0 0 rgba(255, 193, 7, 0.34); }
+      70% { box-shadow: 0 0 0 15px rgba(255, 193, 7, 0); }
+      100% { box-shadow: 0 0 0 0 rgba(255, 193, 7, 0); }
+    }
+
+    @keyframes progressStripes {
+      to { background-position: 42px 0; }
+    }
+
+    @keyframes correctFlash {
+      0% { box-shadow: 0 7px 0 rgba(0, 0, 0, 0.72), 0 0 0 0 rgba(55, 216, 108, 0); }
+      35% { box-shadow: 0 7px 0 rgba(0, 0, 0, 0.72), 0 0 0 5px rgba(55, 216, 108, 0.36), 0 0 38px rgba(55, 216, 108, 0.42); }
+      100% { box-shadow: 0 7px 0 rgba(0, 0, 0, 0.72), 0 0 0 0 rgba(55, 216, 108, 0); }
+    }
+
+    @keyframes wrongShake {
+      0%, 100% { transform: translateX(0); }
+      18% { transform: translateX(-7px); }
+      36% { transform: translateX(6px); }
+      54% { transform: translateX(-5px); }
+      72% { transform: translateX(4px); }
+      86% { transform: translateX(-2px); }
+    }
+
+    @keyframes wrongShakeSmall {
+      0%, 100% { transform: translateX(0); }
+      22% { transform: translateX(-4px); }
+      44% { transform: translateX(4px); }
+      66% { transform: translateX(-2px); }
+      82% { transform: translateX(2px); }
+    }
+
+    @keyframes answerPop {
+      0% { transform: scale(1); }
+      48% { transform: scale(1.025); }
+      100% { transform: scale(1); }
+    }
+
+    @keyframes feedbackIn {
+      from { opacity: 0; transform: translateY(7px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    @keyframes popIn {
+      from { opacity: 0; transform: translateY(8px) scale(0.96); }
+      to { opacity: 1; transform: translateY(0) scale(1); }
+    }
+
+    @keyframes scoreBump {
+      0% { transform: scale(1); }
+      45% { transform: scale(1.26); color: #FFF2A8; }
+      100% { transform: scale(1); }
+    }
+
+    /* ---------------------------------------------------------
+       АДАПТИВНОСТЬ
+       --------------------------------------------------------- */
+    @media (max-width: 880px) {
+      .start-grid {
+        grid-template-columns: 1fr;
+        gap: 20px;
+      }
+
+      .mascot-stage {
+        order: -1;
+        max-width: 330px;
+        min-height: 315px;
+      }
+
+      .mascot-slot {
+        width: min(100%, 268px);
+      }
+
+      .float-symbol {
+        width: 48px;
+        height: 48px;
+        border-radius: 14px;
+        font-size: 1.35rem;
+      }
+
+      .mascot-bubble {
+        right: 2px;
+        font-size: 0.79rem;
+      }
+
+      .start-copy {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        text-align: center;
+      }
+
+      .tagline {
+        margin-top: 16px;
+      }
+
+      .rule-chips {
+        width: 100%;
+        margin-top: 20px;
+      }
+
+      .start-meta {
+        justify-content: center;
+      }
+
+      .start-ribbon {
+        justify-content: center;
+      }
+
+      .start-ribbon__runes {
+        display: none;
+      }
+    }
+
+    @media (max-width: 620px) {
+      body {
+        align-items: flex-start;
+        padding: 9px;
+      }
+
+      .panel {
+        border-width: 3px;
+        border-radius: 25px;
+        box-shadow: 0 8px 0 #000, 0 20px 45px rgba(0, 0, 0, 0.55);
+      }
+
+      .panel::before {
+        inset: 7px;
+        border-radius: 18px;
+      }
+
+      .start-panel {
+        padding: 22px 15px 24px;
+      }
+
+      .game-panel {
+        padding: 14px;
+      }
+
+      .mascot-stage {
+        min-height: 282px;
+        padding: 10px;
+      }
+
+      .mascot-slot {
+        width: min(100%, 250px);
+      }
+
+      .float-symbol--left {
+        left: -2px;
+      }
+
+      .float-symbol--right {
+        right: -2px;
+      }
+
+      .mascot-caption {
+        margin-top: 12px;
+      }
+
+      .game-title {
+        margin-top: 12px;
+      }
+
+      .title-line--main {
+        font-size: clamp(2.8rem, 14vw, 4rem);
+      }
+
+      .title-line--sub {
+        font-size: clamp(1.75rem, 9.6vw, 2.6rem);
+      }
+
+      .tagline {
+        font-size: 0.91rem;
+      }
+
+      .rule-chips {
+        gap: 7px;
+      }
+
+      .rule-chip {
+        padding: 8px 4px;
+      }
+
+      .rule-chip__label {
+        font-size: 0.5rem;
+        letter-spacing: 0.04em;
+      }
+
+      .rule-chip__formula {
+        font-size: clamp(0.7rem, 3.4vw, 0.9rem);
+      }
+
+      .btn--hero {
+        min-height: 65px;
+        font-size: 1.08rem;
+      }
+
+      .game-hud {
+        align-items: flex-start;
+        flex-wrap: wrap;
+        gap: 10px;
+      }
+
+      .hud-brand__mark {
+        width: 39px;
+        height: 39px;
+        flex-basis: 39px;
+        font-size: 0.82rem;
+      }
+
+      .hud-stats {
+        margin-left: auto;
+      }
+
+      .hud-pill {
+        min-height: 37px;
+        padding: 5px 9px;
+      }
+
+      .hud-pill__label {
+        display: none;
+      }
+
+      .hud-pill strong {
+        font-size: 0.8rem;
+      }
+
+      .hud-pill--gold strong {
+        font-size: 0.9rem;
+      }
+
+      .progress-block {
+        margin: 13px 0 15px;
+      }
+
+      .progress-caption {
+        font-size: 0.54rem;
+      }
+
+      .battle-card {
+        padding: 15px 12px 14px;
+        border-radius: 19px;
+      }
+
+      .question-head {
+        align-items: flex-start;
+      }
+
+      .question-badge {
+        padding: 5px 9px;
+        font-size: 0.53rem;
+      }
+
+      .question-type {
+        max-width: 44%;
+        font-size: 0.49rem;
+        line-height: 1.4;
+      }
+
+      .question-expression {
+        padding: 20px 0 7px;
+        font-size: clamp(1.9rem, 10.5vw, 3rem);
+      }
+
+      .question-prompt {
+        margin-bottom: 13px;
+        font-size: 0.73rem;
+      }
+
+      .answers {
+        grid-template-columns: 1fr;
+        gap: 9px;
+      }
+
+      .answer {
+        min-height: 57px;
+        padding: 8px 12px;
+        border-radius: 12px;
+      }
+
+      .answer__key {
+        width: 31px;
+        height: 31px;
+        flex-basis: 31px;
+        font-size: 0.72rem;
+      }
+
+      .answer__value {
+        font-size: clamp(1.09rem, 5.5vw, 1.36rem);
+      }
+
+      .feedback {
+        padding: 10px 11px;
+      }
+
+      .feedback__icon {
+        width: 32px;
+        height: 32px;
+        flex-basis: 32px;
+      }
+
+      .feedback__copy {
+        font-size: 0.78rem;
+      }
+
+      .feedback__copy strong {
+        font-size: 0.87rem;
+      }
+
+      .game-actions {
+        margin-top: 12px;
+      }
+
+      .btn--next {
+        width: 100%;
+        min-width: 0;
+      }
+
+      .end-panel {
+        padding: 35px 16px 28px;
+      }
+
+      .end-title {
+        font-size: clamp(2.1rem, 12vw, 3rem);
+      }
+
+      .end-stats {
+        grid-template-columns: 1fr;
+        max-width: 310px;
+      }
+
+      .end-actions {
+        flex-direction: column;
+      }
+
+      .end-actions .btn {
+        width: 100%;
+        max-width: 320px;
+        min-width: 0;
+      }
+    }
+
+    @media (max-width: 390px) {
+      .mascot-bubble {
+        top: -12px;
+        right: -3px;
+        padding: 9px 11px;
+        font-size: 0.7rem;
+      }
+
+      .mascot-stage {
+        min-height: 250px;
+      }
+
+      .mascot-slot {
+        width: min(100%, 205px);
+      }
+
+      .float-symbol {
+        width: 40px;
+        height: 40px;
+        border-radius: 12px;
+        font-size: 1.1rem;
+      }
+
+      .start-meta {
+        font-size: 0.68rem;
+      }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      *,
+      *::before,
+      *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        scroll-behavior: auto !important;
+        transition-duration: 0.01ms !important;
+      }
+    }
+  
+    /* =========================================================
+       SuperTor: Уравнения — дополнения к общему стилю
+       ========================================================= */
+
+    .start-actions {
+      display: flex;
+      flex-direction: column;
+      gap: 11px;
+      width: 100%;
+      max-width: 440px;
+    }
+
+    .start-actions .btn--hero {
+      max-width: none;
+    }
+
+    .btn--secondary {
+      min-height: 56px;
+      font-size: 0.95rem;
+      letter-spacing: 0.03em;
+    }
+
+    .btn--secondary .btn__icon {
+      font-size: 0.68rem;
+      letter-spacing: 0;
+    }
+
+    .install-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      margin-top: 15px;
+      padding: 9px 15px;
+      border: 2px solid rgba(0, 191, 255, 0.42);
+      border-radius: 999px;
+      color: #BDEFFF;
+      background: rgba(0, 191, 255, 0.08);
+      font-family: var(--font-body);
+      font-size: 0.72rem;
+      font-weight: 900;
+      letter-spacing: 0.07em;
+      cursor: pointer;
+      transition: color 0.15s ease, border-color 0.15s ease, background 0.15s ease;
+    }
+
+    .install-btn:hover {
+      color: var(--gold);
+      border-color: var(--gold);
+      background: rgba(255, 193, 7, 0.09);
+    }
+
+    /* ---------- Уравнение и дроби ---------- */
+    .equation-view {
+      padding: clamp(17px, 3vw, 29px) 2px clamp(6px, 1vw, 10px);
+      font-size: clamp(1.12rem, 3.15vw, 1.95rem);
+      line-height: 1.55;
+      letter-spacing: 0.005em;
+      text-align: center;
+    }
+
+    .equation-view sup {
+      font-size: 0.58em;
+    }
+
+    .frac {
+      display: inline-flex;
+      flex-direction: column;
+      align-items: stretch;
+      justify-content: center;
+      margin: 0 0.14em;
+      font-size: 0.86em;
+      line-height: 1.08;
+      vertical-align: middle;
+      text-align: center;
+    }
+
+    .frac__num,
+    .frac__den {
+      display: block;
+      padding: 0 0.18em;
+      white-space: nowrap;
+    }
+
+    .frac__num {
+      padding-bottom: 1px;
+      border-bottom: 2px solid currentColor;
+    }
+
+    .frac__den {
+      padding-top: 1px;
+    }
+
+    .equation-view .frac {
+      margin-top: -0.28em;
+    }
+
+    /* ---------- Ввод ответа ---------- */
+    .answer-form {
+      position: relative;
+      z-index: 1;
+    }
+
+    .answer-form__grid {
+      display: grid;
+      grid-template-columns: auto minmax(0, 1fr) auto;
+      align-items: center;
+      gap: 10px;
+      width: 100%;
+      max-width: 640px;
+      margin: 0 auto;
+    }
+
+    .answer-row__prefix {
+      color: var(--gold);
+      font-family: var(--font-display);
+      font-size: clamp(1.2rem, 2.6vw, 1.55rem);
+      line-height: 1;
+      text-shadow: 0 2px 0 #000;
+    }
+
+    .answer-input {
+      width: 100%;
+      min-height: 58px;
+      padding: 8px 16px;
+      border: 3px solid var(--ink);
+      border-radius: 15px;
+      color: var(--white);
+      background: #061729;
+      box-shadow:
+        inset 0 4px 10px rgba(0, 0, 0, 0.55),
+        0 3px 0 rgba(255, 255, 255, 0.04);
+      font-family: var(--font-display);
+      font-size: clamp(1.15rem, 2.6vw, 1.5rem);
+      text-align: center;
+      transition: border-color 0.15s ease, box-shadow 0.15s ease, background 0.15s ease;
+    }
+
+    .answer-input::placeholder {
+      color: #5E7E9C;
+      font-family: var(--font-body);
+      font-size: 0.78em;
+      font-weight: 700;
+      letter-spacing: 0;
+    }
+
+    .answer-input:focus {
+      outline: none;
+      border-color: var(--blue);
+      box-shadow:
+        0 0 0 3px rgba(0, 191, 255, 0.22),
+        inset 0 4px 10px rgba(0, 0, 0, 0.55);
+    }
+
+    .answer-input:disabled {
+      opacity: 1;
+      cursor: default;
+    }
+
+    .answer-input.is-correct {
+      border-color: var(--green);
+      color: #C9FFDA;
+      background: rgba(18, 80, 45, 0.55);
+    }
+
+    .answer-input.is-wrong {
+      border-color: var(--red);
+      color: #FFD3D8;
+      background: rgba(90, 18, 30, 0.55);
+    }
+
+    .answer-input.is-invalid {
+      animation: wrongShakeSmall 0.4s ease both;
+    }
+
+    .btn--check {
+      min-height: 58px;
+      padding: 0 20px;
+      border-radius: 15px;
+      font-size: 0.95rem;
+    }
+
+    .insert-chips {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 7px;
+      margin-top: 10px;
+    }
+
+    .chip {
+      min-width: 40px;
+      min-height: 34px;
+      padding: 0 11px;
+      border: 2px solid rgba(0, 191, 255, 0.32);
+      border-radius: 10px;
+      color: #CDEFFF;
+      background: rgba(0, 191, 255, 0.08);
+      font-family: var(--font-body);
+      font-size: 0.86rem;
+      font-weight: 900;
+      cursor: pointer;
+      transition: color 0.14s ease, border-color 0.14s ease, background 0.14s ease;
+    }
+
+    .chip:hover {
+      color: var(--gold);
+      border-color: var(--gold);
+      background: rgba(255, 193, 7, 0.09);
+    }
+
+    .chip:active {
+      transform: translateY(1px);
+    }
+
+    .chip--wide {
+      font-size: 0.7rem;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+    }
+
+    .input-hint {
+      margin: 9px 0 0;
+      color: var(--muted);
+      font-size: 0.7rem;
+      font-weight: 800;
+      line-height: 1.4;
+      text-align: center;
+    }
+
+    .input-hint.is-error {
+      color: #FFB3BE;
+    }
+
+    /* ---------- Решение в обратной связи ---------- */
+    .solution {
+      display: block;
+      margin-top: 7px;
+      padding-top: 7px;
+      border-top: 1px dashed rgba(255, 255, 255, 0.2);
+      color: #BFD8EA;
+      font-weight: 700;
+    }
+
+    .solution .frac {
+      font-size: 0.92em;
+    }
+
+    .feedback__answer {
+      white-space: nowrap;
+    }
+
+    .feedback__copy {
+      line-height: 1.5;
+    }
+
+    /* ---------- Фокус на заголовках ---------- */
+    .end-title:focus-visible,
+    .equation-view:focus-visible {
+      outline: none;
+    }
+
+    /* ---------- Мобильная раскладка ---------- */
+    @media (max-width: 620px) {
+      .rule-chips {
+        gap: 6px;
+      }
+
+      .rule-chip {
+        padding: 8px 5px;
+      }
+
+      .rule-chip__formula {
+        white-space: normal;
+        overflow-wrap: break-word;
+        font-size: clamp(0.62rem, 2.6vw, 0.78rem);
+        line-height: 1.25;
+      }
+
+      .equation-view {
+        padding: 16px 0 5px;
+        font-size: clamp(1.02rem, 4.35vw, 1.42rem);
+        line-height: 1.55;
+      }
+
+      .answer-form__grid {
+        grid-template-columns: auto minmax(0, 1fr);
+        gap: 8px;
+      }
+
+      .btn--check {
+        grid-column: 1 / -1;
+        width: 100%;
+        min-height: 52px;
+      }
+
+      .answer-input {
+        min-height: 54px;
+      }
+
+      .chip {
+        min-height: 32px;
+      }
+
+      .chip--wide {
+        font-size: 0.64rem;
+      }
+
+      .start-actions {
+        max-width: none;
+      }
+
+      .btn--secondary {
+        min-height: 52px;
+      }
+    }
+
+    @media (max-width: 390px) {
+      .equation-view {
+        font-size: 1rem;
+      }
+
+      .answer-row__prefix {
+        font-size: 1.1rem;
+      }
+
+      .input-hint {
+        font-size: 0.64rem;
+      }
+    }
+
+  </style>
+</head>
+<body>
+  <div class="world" aria-hidden="true">
+    <div class="aurora aurora--one"></div>
+    <div class="aurora aurora--two"></div>
+    <div class="aurora aurora--three"></div>
+    <div class="mountains mountains--back"></div>
+    <div class="mountains mountains--front"></div>
+  </div>
+
+  <main class="game-shell">
+    <!-- ================= СТАРТОВЫЙ ЭКРАН ================= -->
+    <section class="screen is-active" id="startScreen" aria-labelledby="gameTitle">
+      <div class="panel start-panel">
+        <div class="start-grid">
+          <div class="mascot-stage">
+            <div class="orbit orbit--outer" aria-hidden="true"></div>
+            <div class="orbit orbit--inner" aria-hidden="true"></div>
+            <div class="mascot-bubble">Уравнение? Легко!</div>
+
+            <div class="mascot-slot" id="mascotSlot">
+              <img class="mascot-art" src="mascot.png" alt="Викинг SuperTor" width="560" height="553">
+            </div>
+            <span class="float-symbol float-symbol--left" aria-hidden="true">+</span>
+            <span class="float-symbol float-symbol--right" aria-hidden="true">=</span>
+            <p class="mascot-caption">Твой викинг-наставник</p>
+          </div>
+
+          <div class="start-copy">
+            <div class="eyebrow"><span class="eyebrow__bolt" aria-hidden="true">⚡</span> 7 класс · линейные уравнения</div>
+            <h1 class="game-title" id="gameTitle" aria-label="SuperTor: Уравнения">
+              <span class="title-line title-line--main">SuperTor<span class="title-colon">:</span></span>
+              <span class="title-line title-line--sub">Уравнения</span>
+            </h1>
+            <p class="tagline">21 уравнение из главы «Линейные уравнения». Вводи ответ, получай очки и веди свой драккар к победе.</p>
+
+            <div class="rule-chips" aria-label="Полезные правила">
+              <div class="rule-chip">
+                <span class="rule-chip__label">скобки</span>
+                <span class="rule-chip__formula">раскрой и приведи</span>
+              </div>
+              <div class="rule-chip">
+                <span class="rule-chip__label">дроби</span>
+                <span class="rule-chip__formula">общий знаменатель</span>
+              </div>
+              <div class="rule-chip">
+                <span class="rule-chip__label">перенос</span>
+                <span class="rule-chip__formula">x влево, числа вправо</span>
+              </div>
+            </div>
+
+            <div class="start-actions">
+              <button class="btn btn--primary btn--hero" id="startBtn" type="button">
+                <span class="btn__icon" aria-hidden="true">▶</span>
+                <span>Начать игру</span>
+              </button>
+              <button class="btn btn--ghost btn--secondary" id="startAllBtn" type="button">
+                <span class="btn__icon" aria-hidden="true">21</span>
+                <span>Все 21 уравнение</span>
+              </button>
+            </div>
+
+            <p class="start-meta">
+              <span>10 случайных из 21</span>
+              <span>ввод ответа</span>
+              <span>без таймера</span>
+            </p>
+
+            <button class="install-btn" id="installBtn" type="button" hidden>
+              <span aria-hidden="true">⬇</span> Установить приложение
+            </button>
+          </div>
+        </div>
+
+        <div class="start-ribbon">
+          <span>Линейные уравнения · 7 класс</span>
+          <span class="start-ribbon__runes" aria-hidden="true">ᚠ ᚢ ᚦ ᚨ ᚱ ᚲ</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- ================= ИГРОВОЙ ЭКРАН ================= -->
+    <section class="screen" id="gameScreen" aria-labelledby="gameHeading" hidden>
+      <div class="panel game-panel">
+        <header class="game-hud">
+          <div class="hud-brand">
+            <span class="hud-brand__mark" aria-hidden="true">ST</span>
+            <span class="hud-brand__text">
+              SuperTor
+              <small>Уравнения</small>
+            </span>
+          </div>
+          <div class="hud-stats">
+            <div class="hud-pill" aria-label="Номер уравнения">
+              <span class="hud-pill__label">Номер</span>
+              <strong id="questionCounter">1 / 10</strong>
+            </div>
+            <div class="hud-pill hud-pill--gold" aria-label="Очки">
+              <span class="hud-pill__icon" aria-hidden="true">★</span>
+              <strong id="scoreValue" aria-live="polite">0</strong>
+            </div>
+          </div>
+        </header>
+
+        <div class="progress-block">
+          <div class="progress-caption">
+            <span id="progressLabel">Старт похода</span>
+            <span id="progressPercent">10%</span>
+          </div>
+          <div class="progress-track" id="progressTrack" role="progressbar" aria-label="Прогресс похода" aria-valuemin="0" aria-valuemax="100" aria-valuenow="10">
+            <div class="progress-fill" id="progressFill"></div>
+          </div>
+        </div>
+
+        <h2 class="visually-hidden" id="gameHeading">Реши уравнение</h2>
+
+        <div class="battle-card" id="battleCard">
+          <div class="question-head">
+            <span class="question-badge"><span class="question-badge__bolt" aria-hidden="true">⚡</span> Реши уравнение</span>
+            <span class="question-type" id="questionType">Линейное уравнение</span>
+          </div>
+
+          <div class="question-expression equation-view" id="questionExpression" tabindex="-1" aria-live="polite"></div>
+          <p class="question-prompt">Введи значение x</p>
+
+          <form class="answer-form" id="answerForm" novalidate>
+            <div class="answer-form__grid">
+              <span class="answer-row__prefix" aria-hidden="true">x =</span>
+              <label class="visually-hidden" for="answerInput">Ответ</label>
+              <input
+                class="answer-input"
+                id="answerInput"
+                name="answer"
+                type="text"
+                inputmode="text"
+                autocomplete="off"
+                autocapitalize="off"
+                spellcheck="false"
+                placeholder="например, −3 или 7/4"
+                aria-describedby="inputHint"
+              >
+              <button class="btn btn--blue btn--check" id="submitBtn" type="submit">
+                <span>Проверить</span>
+              </button>
+            </div>
+
+            <div class="insert-chips" id="insertChips">
+              <button type="button" class="chip" data-insert="−" aria-label="Минус">−</button>
+              <button type="button" class="chip" data-insert="/" aria-label="Дробная черта">/</button>
+              <button type="button" class="chip" data-insert="," aria-label="Десятичная запятая">,</button>
+              <button type="button" class="chip chip--wide" data-insert="любое число">любое число</button>
+            </div>
+
+            <p class="input-hint" id="inputHint">Дроби: 7/4 · смешанные: 1 3/4 · десятичные: 0,05</p>
+          </form>
+
+          <div class="feedback" id="feedback" aria-live="assertive" hidden>
+            <span class="feedback__icon" id="feedbackIcon" aria-hidden="true">✓</span>
+            <div class="feedback__copy">
+              <strong id="feedbackTitle">Верно!</strong>
+              <span id="feedbackText"></span>
+            </div>
+          </div>
+
+          <div class="game-actions">
+            <button class="btn btn--primary btn--next" id="nextBtn" type="button" hidden>
+              <span>Следующее уравнение</span>
+              <span aria-hidden="true">→</span>
+            </button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ================= ЭКРАН РЕЗУЛЬТАТОВ ================= -->
+    <section class="screen" id="endScreen" aria-labelledby="endTitle" hidden>
+      <div class="panel end-panel">
+        <div class="result-rays" aria-hidden="true"></div>
+
+        <div class="end-crest" aria-hidden="true">
+          <span class="end-crest__star">★</span>
+          <span class="final-score" id="finalScore">0/10</span>
+          <span class="final-score__label">верных ответов</span>
+        </div>
+
+        <p class="end-kicker">Поход завершён</p>
+        <h2 class="end-title is-victory" id="endTitle" tabindex="-1">Победа!</h2>
+        <p class="end-message" id="endMessage">Вы ответили на 0 из 10</p>
+        <p class="end-note" id="endNote"></p>
+        <span class="record-badge" id="recordBadge" hidden>★ Новый рекорд!</span>
+
+        <div class="end-stats">
+          <div class="end-stat">
+            <span>Точность</span>
+            <strong id="accuracyValue">0%</strong>
+          </div>
+          <div class="end-stat">
+            <span>Лучший результат</span>
+            <strong id="bestScoreValue">0 / 10</strong>
+          </div>
+        </div>
+
+        <div class="end-actions">
+          <button class="btn btn--primary" id="restartBtn" type="button">
+            <span class="btn__icon" aria-hidden="true">↻</span>
+            <span>Играть снова</span>
+          </button>
+          <button class="btn btn--ghost" id="homeBtn" type="button">На главную</button>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <noscript>
+    <p style="position:fixed;inset:auto 12px 12px;padding:12px;background:#FFC107;color:#07152A;font-weight:800;border-radius:10px;z-index:9">
+      Для игры нужен JavaScript. Включите его в настройках браузера.
+    </p>
+  </noscript>
+
+
+  <script>
+    (() => {
+      "use strict";
+
+      const frac = (numerator, denominator) => `
+        <span class="frac">
+          <span class="frac__num">${numerator}</span>
+          <span class="frac__den">${denominator}</span>
+        </span>`;
+
+      const QUESTIONS = [
+        {
+          id: 1,
+          equation: "0,5 + 2x = 1,5 + 3x",
+          answer: -1,
+          display: "−1",
+          solution: "Перенесём x влево, числа вправо: 2x − 3x = 1,5 − 0,5; −x = 1; x = −1."
+        },
+        {
+          id: 2,
+          equation: `${frac("1", "3")}x + 4 = 0`,
+          answer: -12,
+          display: "−12",
+          solution: "Умножим обе части на 3: x + 12 = 0; x = −12."
+        },
+        {
+          id: 3,
+          equation: "7 − 2(x − 4,5) = 6 − 4x",
+          answer: -5,
+          display: "−5",
+          solution: "Раскроем скобки: 7 − 2x + 9 = 6 − 4x; 16 − 2x = 6 − 4x; 2x = −10; x = −5."
+        },
+        {
+          id: 4,
+          equation: `${frac("x", "2")} − ${frac("x", "3")} = 2`,
+          answer: 12,
+          display: "12",
+          solution: "Общий знаменатель 6: (3x − 2x) / 6 = 2; x / 6 = 2; x = 12."
+        },
+        {
+          id: 5,
+          equation: "11x + 5 = 5x − 12 − 4 − x",
+          answer: -3,
+          display: "−3",
+          solution: "Упростим правую часть: 11x + 5 = 4x − 16; 7x = −21; x = −3."
+        },
+        {
+          id: 6,
+          equation: "(x + 2)<sup>2</sup> − 5(x − 4) = (x − 6)(x + 6)",
+          answer: 60,
+          display: "60",
+          solution: "Раскроем скобки: x² + 4x + 4 − 5x + 20 = x² − 36; −x + 24 = −36; x = 60."
+        },
+        {
+          id: 7,
+          equation: `6 − ${frac("x − 1", "2")} = ${frac("3 − x", "2")} + ${frac("x − 2", "3")}`,
+          answer: 17,
+          display: "17",
+          solution: "Умножим на 6: 36 − 3(x − 1) = 3(3 − x) + 2(x − 2); 39 − 3x = 5 − x; 34 = 2x; x = 17."
+        },
+        {
+          id: 8,
+          equation: `${frac("2", "3")}(x + 3) = ${frac("6 + 2x", "3")}`,
+          answer: "any",
+          display: "любое число",
+          solution: "Умножим на 3: 2(x + 3) = 6 + 2x; 2x + 6 = 6 + 2x; 0 = 0. Подходит любое значение x."
+        },
+        {
+          id: 9,
+          equation: `0,2(x − 1) + 0,5(3x − 9) = ${frac("x", "3")} − 2`,
+          answer: 81 / 41,
+          display: "1 40/41",
+          solution: "Умножим на 30: 6(x − 1) + 15(3x − 9) = 10x − 60; 51x − 141 = 10x − 60; 41x = 81; x = 81/41 = 1 40/41."
+        },
+        {
+          id: 10,
+          equation: `${frac("3x − 11", "4")} − ${frac("3 − 5x", "8")} = ${frac("x + 6", "2")}`,
+          answer: 7,
+          display: "7",
+          solution: "Умножим на 8: 2(3x − 11) − (3 − 5x) = 4(x + 6); 11x − 25 = 4x + 24; 7x = 49; x = 7."
+        },
+        {
+          id: 11,
+          equation: "5 − 3(x − 2(x − 2(x − 2))) = 2",
+          answer: 3,
+          display: "3",
+          solution: "Раскрываем скобки изнутри: x − 2(x − 2) = 4 − x; x − 2(4 − x) = 3x − 8; 5 − 3(3x − 8) = 2; 29 − 9x = 2; x = 3."
+        },
+        {
+          id: 12,
+          equation: `${frac("x", "2")} + ${frac("x", "6")} + ${frac("x", "12")} + ${frac("x", "20")} + ${frac("x", "30")} + ${frac("x", "42")} = −6`,
+          answer: -7,
+          display: "−7",
+          solution: "Так как 1/(n(n+1)) = 1/n − 1/(n+1), сумма равна x(1 − 1/7) = 6x/7; 6x/7 = −6; x = −7."
+        },
+        {
+          id: 13,
+          equation: `${frac("8", "9")}x + ${frac("34", "72")} − ${frac("9", "8")}x = 0`,
+          answer: 2,
+          display: "2",
+          solution: "8/9 − 9/8 = −17/72, а 34/72 = 17/36. Получаем (−17/72)x + 17/36 = 0; x = 2."
+        },
+        {
+          id: 14,
+          equation: `${frac("3x", "0,2")} = ${frac("2½", "3⅓")}`,
+          answer: 0.05,
+          display: "0,05",
+          solution: "3x / 0,2 = 15x; (2½)/(3⅓) = (5/2) · (3/10) = 3/4; 15x = 3/4; x = 1/20 = 0,05."
+        },
+        {
+          id: 15,
+          equation: `${frac("3x + 6", "2")} + ${frac("7x − 14", "3")} = ${frac("x + 1", "9")}`,
+          answer: 32 / 67,
+          display: "32/67",
+          solution: "Умножим на 18: 9(3x + 6) + 6(7x − 14) = 2(x + 1); 69x − 30 = 2x + 2; 67x = 32; x = 32/67."
+        },
+        {
+          id: 16,
+          equation: `${frac("3x − 1", "5")} − ${frac("2x + 6", "8")} = 5`,
+          answer: 17,
+          display: "17",
+          solution: "Умножим на 40: 8(3x − 1) − 5(2x + 6) = 200; 14x − 38 = 200; 14x = 238; x = 17."
+        },
+        {
+          id: 17,
+          equation: `${frac("x − 2", "5")} − ${frac("5 − 2x", "4")} + ${frac("4x − 1", "20")} = 4 − x`,
+          answer: 3,
+          display: "3",
+          solution: "Умножим на 20: 4(x − 2) − 5(5 − 2x) + (4x − 1) = 80 − 20x; 18x − 34 = 80 − 20x; 38x = 114; x = 3."
+        },
+        {
+          id: 18,
+          equation: `${frac("x + 3", "6")} − 1 + ${frac("1", "3")}x = ${frac("1", "2")}(3 − x) − ${frac("x − 1", "3")}`,
+          answer: 7 / 4,
+          display: "1 3/4",
+          solution: "Умножим на 6: (x + 3) − 6 + 2x = 3(3 − x) − 2(x − 1); 3x − 3 = 11 − 5x; 8x = 14; x = 7/4 = 1 3/4."
+        },
+        {
+          id: 19,
+          equation: `0,3 − ${frac("5 − 2x", "5")} = ${frac("3(x − 6)", "2")} − ${frac("1", "5")}(x − 1)`,
+          answer: 9,
+          display: "9",
+          solution: "Умножим на 10: 3 − 2(5 − 2x) = 15(x − 6) − 2(x − 1); 4x − 7 = 13x − 88; 9x = 81; x = 9."
+        },
+        {
+          id: 20,
+          equation: `${frac("2x + 3", "5")} + (7x − ${frac("3 − x", "2")}) = ${frac("7x + 11", "3")} + 1`,
+          answer: 1,
+          display: "1",
+          solution: "Умножим на 30: 6(2x + 3) + 210x − 15(3 − x) = 10(7x + 11) + 30; 237x − 27 = 70x + 140; 167x = 167; x = 1."
+        },
+        {
+          id: 21,
+          equation: `${frac("8x + 13", "3")} = ${frac("19 + 12x", "2")} − (16x − ${frac("7 − 4x", "6")})`,
+          answer: 19 / 40,
+          display: "19/40",
+          solution: "Умножим на 6: 2(8x + 13) = 3(19 + 12x) − (96x − (7 − 4x)); 16x + 26 = 64 − 64x; 80x = 38; x = 19/40."
+        }
+      ];
+
+      const UNICODE_FRACTIONS = {
+        "½": "1/2", "⅓": "1/3", "⅔": "2/3", "¼": "1/4", "¾": "3/4",
+        "⅕": "1/5", "⅖": "2/5", "⅗": "3/5", "⅘": "4/5",
+        "⅙": "1/6", "⅚": "5/6", "⅛": "1/8", "⅜": "3/8", "⅝": "5/8", "⅞": "7/8"
+      };
+
+      const DEFAULT_HINT = "Дроби: 7/4 · смешанные: 1 3/4 · десятичные: 0,05";
+      const state = {
+        mode: "quick",
+        total: 10,
+        questions: [],
+        currentIndex: 0,
+        score: 0,
+        answered: false,
+        best: 0
+      };
+
+      const dom = {
+        startScreen: document.getElementById("startScreen"),
+        gameScreen: document.getElementById("gameScreen"),
+        endScreen: document.getElementById("endScreen"),
+        startBtn: document.getElementById("startBtn"),
+        startAllBtn: document.getElementById("startAllBtn"),
+        restartBtn: document.getElementById("restartBtn"),
+        homeBtn: document.getElementById("homeBtn"),
+        installBtn: document.getElementById("installBtn"),
+        questionCounter: document.getElementById("questionCounter"),
+        scoreValue: document.getElementById("scoreValue"),
+        progressLabel: document.getElementById("progressLabel"),
+        progressPercent: document.getElementById("progressPercent"),
+        progressTrack: document.getElementById("progressTrack"),
+        progressFill: document.getElementById("progressFill"),
+        battleCard: document.getElementById("battleCard"),
+        questionType: document.getElementById("questionType"),
+        questionExpression: document.getElementById("questionExpression"),
+        answerForm: document.getElementById("answerForm"),
+        answerInput: document.getElementById("answerInput"),
+        submitBtn: document.getElementById("submitBtn"),
+        insertChips: document.getElementById("insertChips"),
+        inputHint: document.getElementById("inputHint"),
+        feedback: document.getElementById("feedback"),
+        feedbackIcon: document.getElementById("feedbackIcon"),
+        feedbackTitle: document.getElementById("feedbackTitle"),
+        feedbackText: document.getElementById("feedbackText"),
+        nextBtn: document.getElementById("nextBtn"),
+        finalScore: document.getElementById("finalScore"),
+        endTitle: document.getElementById("endTitle"),
+        endMessage: document.getElementById("endMessage"),
+        endNote: document.getElementById("endNote"),
+        recordBadge: document.getElementById("recordBadge"),
+        accuracyValue: document.getElementById("accuracyValue"),
+        bestScoreValue: document.getElementById("bestScoreValue")
+      };
+
+      const screens = [...document.querySelectorAll(".screen")];
+
+      /* ---------- Хранилище ---------- */
+      function bestKey(total) {
+        return `supertor-equations-best-${total}`;
+      }
+
+      function loadBest(total) {
+        try {
+          const value = Number(localStorage.getItem(bestKey(total)));
+          if (!Number.isFinite(value)) return 0;
+          return Math.min(total, Math.max(0, Math.round(value)));
+        } catch (error) {
+          return 0;
+        }
+      }
+
+      function saveBest(total, value) {
+        try {
+          localStorage.setItem(bestKey(total), String(value));
+        } catch (error) {
+          /* Игра работает и без localStorage. */
+        }
+      }
+
+      /* ---------- Вспомогательные функции ---------- */
+      function shuffle(items) {
+        const result = [...items];
+        for (let index = result.length - 1; index > 0; index -= 1) {
+          const swapIndex = Math.floor(Math.random() * (index + 1));
+          [result[index], result[swapIndex]] = [result[swapIndex], result[index]];
+        }
+        return result;
+      }
+
+      function showScreen(activeScreen) {
+        screens.forEach((screen) => {
+          const isActive = screen === activeScreen;
+          screen.hidden = !isActive;
+          screen.classList.toggle("is-active", isActive);
+          screen.setAttribute("aria-hidden", String(!isActive));
+        });
+        window.scrollTo(0, 0);
+      }
+
+      function focusLater(element, delay = 80) {
+        window.setTimeout(() => {
+          try {
+            element.focus({ preventScroll: true });
+          } catch (error) {
+            element.focus();
+          }
+        }, delay);
+      }
+
+      function equationSpeech(element) {
+        const clone = element.cloneNode(true);
+        clone.querySelectorAll(".frac").forEach((fraction) => {
+          const numerator = fraction.querySelector(".frac__num").textContent.trim();
+          const denominator = fraction.querySelector(".frac__den").textContent.trim();
+          fraction.replaceWith(document.createTextNode(` (${numerator}) / (${denominator}) `));
+        });
+        return clone.textContent.replace(/\s+/g, " ").trim();
+      }
+
+      /* ---------- Разбор ответа ---------- */
+      function parseAnswer(raw) {
+        let value = String(raw).trim();
+        if (!value) return null;
+
+        value = value
+          .toLowerCase()
+          .replace(/[−–—]/g, "-")
+          .replace(/,/g, ".")
+          .replace(/\s+/g, " ")
+          .trim()
+          .replace(/^x\s*=\s*/, "");
+
+        value = value.replace(/[½⅓⅔¼¾⅕⅖⅗⅘⅙⅚⅛⅜⅝⅞]/g, (symbol) => ` ${UNICODE_FRACTIONS[symbol]} `);
+        value = value.replace(/\s+/g, " ").trim();
+
+        if (!value) return null;
+
+        if (/^(любое( число)?|any|r|∞|бесконечность)$/.test(value)) {
+          return { kind: "any" };
+        }
+
+        let match = value.match(/^(-?\d+)\s+(\d+)\s*\/\s*(\d+)$/);
+        if (match) {
+          const whole = Number(match[1]);
+          const numerator = Number(match[2]);
+          const denominator = Number(match[3]);
+          if (!denominator) return null;
+          const sign = whole < 0 ? -1 : 1;
+          return { kind: "number", value: whole + sign * (numerator / denominator) };
+        }
+
+        match = value.match(/^(-?\d+(?:\.\d+)?)\s*\/\s*(\d+(?:\.\d+)?)$/);
+        if (match) {
+          const denominator = Number(match[2]);
+          if (!denominator) return null;
+          return { kind: "number", value: Number(match[1]) / denominator };
+        }
+
+        if (/^-?\d+(?:\.\d+)?$/.test(value)) {
+          return { kind: "number", value: Number(value) };
+        }
+
+        return null;
+      }
+
+      function isCorrectAnswer(question, parsed) {
+        if (question.answer === "any") {
+          return parsed.kind === "any";
+        }
+        return parsed.kind === "number" && Math.abs(parsed.value - question.answer) < 1e-6;
+      }
+
+      /* ---------- Отрисовка ---------- */
+      function renderQuestion() {
+        const question = state.questions[state.currentIndex];
+        const number = state.currentIndex + 1;
+        const progress = Math.round((number / state.total) * 100);
+
+        state.answered = false;
+
+        dom.battleCard.classList.remove("is-correct", "is-wrong");
+        dom.feedback.hidden = true;
+        dom.feedback.className = "feedback";
+        dom.nextBtn.hidden = true;
+        dom.nextBtn.innerHTML = state.currentIndex === state.total - 1
+          ? '<span>К результатам</span><span aria-hidden="true">★</span>'
+          : '<span>Следующее уравнение</span><span aria-hidden="true">→</span>';
+
+        dom.questionExpression.innerHTML = question.equation;
+        dom.questionExpression.setAttribute("aria-label", equationSpeech(dom.questionExpression));
+        dom.questionType.textContent = `№ ${question.id} · линейное уравнение`;
+        dom.questionCounter.textContent = `${number} / ${state.total}`;
+        dom.scoreValue.textContent = String(state.score);
+
+        dom.answerInput.value = "";
+        dom.answerInput.disabled = false;
+        dom.answerInput.className = "answer-input";
+        dom.answerInput.removeAttribute("aria-invalid");
+        dom.submitBtn.hidden = false;
+        dom.insertChips.hidden = false;
+        dom.inputHint.hidden = false;
+        dom.inputHint.className = "input-hint";
+        dom.inputHint.textContent = DEFAULT_HINT;
+
+        dom.progressFill.style.width = `${progress}%`;
+        dom.progressPercent.textContent = `${progress}%`;
+        dom.progressTrack.setAttribute("aria-valuenow", String(progress));
+        dom.progressLabel.textContent = number === state.total
+          ? "Последний рубеж"
+          : number === 1
+            ? "Старт похода"
+            : `Уравнение ${number} из ${state.total}`;
+
+        if (window.matchMedia("(min-width: 700px)").matches) {
+          focusLater(dom.answerInput, 110);
+        } else {
+          focusLater(dom.questionExpression, 80);
+        }
+      }
+
+      function clearInputError() {
+        dom.answerInput.removeAttribute("aria-invalid");
+        dom.answerInput.classList.remove("is-invalid");
+        if (!dom.inputHint.classList.contains("is-error")) return;
+        dom.inputHint.className = "input-hint";
+        dom.inputHint.textContent = DEFAULT_HINT;
+      }
+
+      function showInputError(message) {
+        dom.answerInput.classList.remove("is-invalid");
+        void dom.answerInput.offsetWidth;
+        dom.answerInput.classList.add("is-invalid");
+        dom.answerInput.setAttribute("aria-invalid", "true");
+        dom.inputHint.hidden = false;
+        dom.inputHint.className = "input-hint is-error";
+        dom.inputHint.textContent = message;
+        dom.answerInput.focus();
+      }
+
+      /* ---------- Проверка ---------- */
+      function handleSubmit(event) {
+        event.preventDefault();
+        if (state.answered) return;
+
+        const raw = dom.answerInput.value.trim();
+        if (!raw) {
+          showInputError("Сначала введи ответ.");
+          return;
+        }
+
+        const parsed = parseAnswer(raw);
+        if (!parsed) {
+          showInputError("Не понял ответ. Введи число, дробь (7/4) или «любое число».");
+          return;
+        }
+
+        const question = state.questions[state.currentIndex];
+        const correct = isCorrectAnswer(question, parsed);
+
+        clearInputError();
+        state.answered = true;
+        dom.answerInput.disabled = true;
+        dom.answerInput.classList.add(correct ? "is-correct" : "is-wrong");
+        dom.submitBtn.hidden = true;
+        dom.insertChips.hidden = true;
+        dom.inputHint.hidden = true;
+
+        if (correct) {
+          state.score += 1;
+          dom.scoreValue.textContent = String(state.score);
+          dom.scoreValue.classList.remove("score-bump");
+          void dom.scoreValue.offsetWidth;
+          dom.scoreValue.classList.add("score-bump");
+          dom.battleCard.classList.add("is-correct");
+          dom.feedbackIcon.textContent = "✓";
+          dom.feedbackTitle.textContent = "Верно! +1 очко";
+          dom.feedbackText.innerHTML = `<span class="solution">${question.solution}</span>`;
+        } else {
+          dom.battleCard.classList.add("is-wrong");
+          dom.feedbackIcon.textContent = "✕";
+          dom.feedbackTitle.textContent = "Почти! Разберём решение";
+          dom.feedbackText.innerHTML = `
+            Правильный ответ: <span class="feedback__answer">${question.display}</span>
+            <span class="solution">${question.solution}</span>`;
+        }
+
+        dom.feedback.hidden = false;
+        dom.feedback.className = `feedback ${correct ? "is-correct" : "is-wrong"}`;
+        dom.nextBtn.hidden = false;
+        focusLater(dom.nextBtn, 340);
+      }
+
+      /* ---------- Переходы ---------- */
+      function nextQuestion() {
+        if (!state.answered) return;
+
+        if (state.currentIndex >= state.total - 1) {
+          finishGame();
+          return;
+        }
+
+        state.currentIndex += 1;
+        renderQuestion();
+      }
+
+      function getEndNote(score, total) {
+        const ratio = score / total;
+        if (ratio === 1) {
+          return total === QUESTIONS.length
+            ? "Идеально! Все 21 уравнение решены без ошибок. Драккар уже у цели!"
+            : "Идеально! Все 10 уравнений решены без ошибок. Драккар уже у цели!";
+        }
+        if (ratio >= 0.8) {
+          return "Мощный результат! Ещё немного практики — и будет абсолютная победа.";
+        }
+        if (ratio >= 0.6) {
+          return "Крепкий поход! Ты хорошо справляешься, продолжай тренироваться.";
+        }
+        if (ratio >= 0.4) {
+          return "Половина пути пройдена. Повтори правила и отправляйся в новый поход!";
+        }
+        return "Не сдавайся! Повтори перенос слагаемых и попробуй снова — всё получится.";
+      }
+
+      function finishGame() {
+        const score = state.score;
+        const isNewRecord = score > state.best;
+
+        if (isNewRecord) {
+          state.best = score;
+          saveBest(state.total, score);
+        }
+
+        dom.progressFill.style.width = "100%";
+        dom.progressPercent.textContent = "100%";
+        dom.progressTrack.setAttribute("aria-valuenow", "100");
+        dom.progressLabel.textContent = "Поход завершён";
+
+        const victory = score / state.total >= 0.6;
+
+        dom.finalScore.textContent = `${score}/${state.total}`;
+        dom.endTitle.textContent = victory ? "Победа!" : "Ещё рывок!";
+        dom.endTitle.classList.toggle("is-victory", victory);
+        dom.endMessage.innerHTML = `Вы ответили на <strong>${score} из ${state.total}</strong>`;
+        dom.endNote.textContent = getEndNote(score, state.total);
+        dom.accuracyValue.textContent = `${Math.round((score / state.total) * 100)}%`;
+        dom.bestScoreValue.textContent = `${state.best} / ${state.total}`;
+        dom.recordBadge.hidden = !(isNewRecord && score > 0);
+
+        showScreen(dom.endScreen);
+        focusLater(dom.endTitle, 100);
+      }
+
+      function startGame(mode) {
+        state.mode = mode;
+        state.total = mode === "all" ? QUESTIONS.length : 10;
+        const deck = shuffle(QUESTIONS);
+        state.questions = mode === "all" ? deck : deck.slice(0, state.total);
+        state.currentIndex = 0;
+        state.score = 0;
+        state.answered = false;
+        state.best = loadBest(state.total);
+
+        dom.scoreValue.textContent = "0";
+        dom.scoreValue.classList.remove("score-bump");
+
+        showScreen(dom.gameScreen);
+        renderQuestion();
+      }
+
+      /* ---------- События ---------- */
+      dom.startBtn.addEventListener("click", () => startGame("quick"));
+      dom.startAllBtn.addEventListener("click", () => startGame("all"));
+      dom.restartBtn.addEventListener("click", () => startGame(state.mode));
+      dom.nextBtn.addEventListener("click", nextQuestion);
+      dom.answerForm.addEventListener("submit", handleSubmit);
+
+      dom.answerInput.addEventListener("input", clearInputError);
+
+      dom.insertChips.addEventListener("click", (event) => {
+        const chip = event.target.closest("[data-insert]");
+        if (!chip) return;
+
+        const text = chip.dataset.insert;
+        const input = dom.answerInput;
+        const start = input.selectionStart ?? input.value.length;
+        const end = input.selectionEnd ?? input.value.length;
+
+        input.focus();
+        input.setRangeText(text, start, end, "end");
+        clearInputError();
+      });
+
+      dom.homeBtn.addEventListener("click", () => {
+        showScreen(dom.startScreen);
+        focusLater(dom.startBtn, 100);
+      });
+
+      document.addEventListener("keydown", (event) => {
+        if (dom.gameScreen.hidden) return;
+
+        if (state.answered && event.key === "Enter" && !dom.nextBtn.hidden && document.activeElement !== dom.nextBtn) {
+          event.preventDefault();
+          dom.nextBtn.click();
+        }
+      });
+
+      /* ---------- Установка приложения ---------- */
+      let deferredPrompt = null;
+
+      window.addEventListener("beforeinstallprompt", (event) => {
+        event.preventDefault();
+        deferredPrompt = event;
+        dom.installBtn.hidden = false;
+      });
+
+      dom.installBtn.addEventListener("click", async () => {
+        if (!deferredPrompt) return;
+        deferredPrompt.prompt();
+        try {
+          await deferredPrompt.userChoice;
+        } catch (error) {
+          /* Пользователь мог закрыть окно установки. */
+        }
+        deferredPrompt = null;
+        dom.installBtn.hidden = true;
+      });
+
+      window.addEventListener("appinstalled", () => {
+        deferredPrompt = null;
+        dom.installBtn.hidden = true;
+      });
+
+      if ("serviceWorker" in navigator && /^https?:$/.test(location.protocol)) {
+        window.addEventListener("load", () => {
+          navigator.serviceWorker.register("./sw.js").catch(() => {
+            /* Без service worker игра остаётся рабочей. */
+          });
+        });
+      }
+
+      /* ---------- Старт ---------- */
+      dom.bestScoreValue.textContent = "0 / 10";
+      showScreen(dom.startScreen);
+    })();
+
+  </script>
+</body>
+</html>

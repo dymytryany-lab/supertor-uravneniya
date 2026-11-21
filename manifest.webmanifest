@@ -1,0 +1,59 @@
+{
+  "name": "SuperTor: Уравнения",
+  "short_name": "SuperTor",
+  "description": "Игра-тренажёр по линейным уравнениям для 7 класса: 21 уравнение, ввод ответа и разбор решения.",
+  "lang": "ru",
+  "dir": "ltr",
+  "id": "./",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "display_override": ["standalone", "minimal-ui"],
+  "background_color": "#040C18",
+  "theme_color": "#0A192F",
+  "categories": ["education", "games"],
+  "prefer_related_applications": false,
+  "screenshots": [
+    {
+      "src": "screenshots/mobile-start.png",
+      "sizes": "390x844",
+      "type": "image/png",
+      "form_factor": "narrow",
+      "label": "Стартовый экран игры"
+    },
+    {
+      "src": "screenshots/mobile-feedback.png",
+      "sizes": "390x844",
+      "type": "image/png",
+      "form_factor": "narrow",
+      "label": "Проверка ответа и разбор решения"
+    },
+    {
+      "src": "screenshots/desktop-game.png",
+      "sizes": "1296x894",
+      "type": "image/png",
+      "form_factor": "wide",
+      "label": "Решение уравнения на компьютере"
+    }
+  ],
+  "icons": [
+    {
+      "src": "icons/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "icons/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "icons/icon-maskable-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
+    }
+  ]
+}
